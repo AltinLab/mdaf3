@@ -35,19 +35,100 @@ This package seeks to expose AF3 outputs (including confidence metrics) and pred
 
 ### How do I...
 
-Compress my AF3 output directory to 1/10th the size?
-
-> [!IMPORTANT]
-> This will delete 'TERMS_OF_USE.md' as well as the input JSON for the AF3 job ('<job_name>_data.json')
-> among other things. This feature is designed with large HPC batches in mind, so if you aren't sure, 
-> read the [compression code](mdaf3/AF3OutputParser.py#:~:text=compress)!
-
+Get a python interface into my AF3 output?
 ```python
 # example inference output
-from mdaf3.data.files import UNCOMPRESSEED_AF3_OUTPUT_PATH
+from mdaf3.data.files import UNCOMPRESSED_AF3_OUTPUT_PATH
 from mdaf3.AF3OutputParser import AF3Output
 
-af3_output = AF3Output(UNCOMPRESSEED_AF3_OUTPUT_PATH)
+# Equivalent to AF3Output(Path("/path/to/inference/output"))
+af3_output = AF3Output(UNCOMPRESSED_AF3_OUTPUT_PATH)
+```
+
+Get summary information about the AF3 inference job?
+```python
+summary_dict = af3_output.get_summary_metrics()
+
+chain_pair_iptm_ndarr = summary_dict["chain_pair_iptm"]
+ranking_score = summary_dict["ranking_score"]
+
+# all 'get_' methods take an optional "seed" and "sample_num" argument
+# if not provided, the best model (by AF3 ranking score)
+# is returned
+summary_dict_seed_1 = af3_output.get_summary_metrics(seed=1)
+```
+
+Calculate the mean pLDDT of atoms in a particular protein?
+```python
+u = af3_output.get_mda_universe()
+
+# segid in MDAnalysis corresponds to protein ID in AF3 input JSON
+# https://github.com/google-deepmind/alphafold3/blob/main/docs/input.md
+selection = u.select_atoms("segid A")
+
+# pLDDT is stored in the "tempfactors" attribute of an 
+# MDAnalysis AtomGroup
+mean_pLDDT_chain = selection.tempfactors.mean()
+```
+
+Find the minimum PAE among all residue pairs between two protein chains?
+```python
+u = af3_output.get_mda_universe()
+
+# move up the topology heirarchy
+# from atom -> amino acid residue
+# using AtomGroup.residues
+protein_1_all_res = u.select_atoms("segid A").residues
+
+protein_2_all_res = u.select_atoms("segid B").residues
+
+pae_ndarr = af3_output.get_pae_ndarr()
+
+# resindices are 0-indexed amino acid residue indices
+# that correspond to AF3 token indices
+min_pae_p1_p2 = pae_ndarr[protein_1_res.resindices][
+    protein_2_all_res.resindices
+].min()
+```
+
+Find the max contact probability between a single residue of one protein chain
+and any residue in another protein chain?
+```python
+u = af3_output.get_mda_universe()
+
+protein_res_1 = u.select_atoms("segid A").residues[0]
+protein_2_all_res = u.select_atoms("segid B").residues
+
+contact_prob_ndarr = af3_output.get_contact_prob_ndarr()
+
+max_contact_prob_res1_p2 = contact_prob_ndarr[protein_res_1.resindices][
+    protein_2_all_res.resindices
+].max()
+```
+
+Find the mean pLDDT of all atoms that are within 5 angstroms 
+of a particular residue?
+```python
+u = af3_output.get_mda_universe(seed=1)
+
+particular_residue = u.select_atoms("segid A").residues[0]
+
+atoms_around_particular_res = u.select_atoms(
+    "around 5 group pr", pr=particular_residue
+)
+
+mean_pLDDT_around_pr = atoms_around_particular_res.mean()
+```
+
+Compress my AF3 output directory without losing confidence metric precision?
+
+> [!NOTE]
+> This will delete 'TERMS_OF_USE.md' as well as the input JSON for the AF3 job ('<job_name>_data.json')
+> among other things. This feature is designed with large HPC batches in mind, so if you aren't sure, 
+> read the [compression code](https://github.com/ljwoods2/mdaf3/blob/main/mdaf3/AF3OutputParser.py#:~:text=compress)!
+
+```python
+af3_output = AF3Output(UNCOMPRESSED_AF3_OUTPUT_PATH)
 af3_output.compress()
 ```
 
