@@ -166,6 +166,51 @@ class AF3Output:
             top_path.as_posix(), topology_format="MMCIF", **kwargs
         )
 
+    def get_token_chain_ids(self, seed=None, sample_num=None):
+        if self.compressed:
+            with self.get_h5_handle() as hf:
+                return hf[
+                    self._seed_samplenum_str(seed, sample_num)
+                    + "/"
+                    + "confidences"
+                ]["token_chain_ids"][()].astype("U")
+
+        else:
+            full_data_dict = self._get_full_data_dict(
+                seed=seed, sample_num=sample_num
+            )
+            return np.array(full_data_dict["token_chain_ids"], dtype="U")
+
+    def get_atom_chain_ids(self, seed=None, sample_num=None):
+        if self.compressed:
+            with self.get_h5_handle() as hf:
+                return hf[
+                    self._seed_samplenum_str(seed, sample_num)
+                    + "/"
+                    + "confidences"
+                ]["atom_chain_ids"][()].astype("U")
+
+        else:
+            full_data_dict = self._get_full_data_dict(
+                seed=seed, sample_num=sample_num
+            )
+            return np.array(full_data_dict["atom_chain_ids"], dtype="U")
+
+    def get_token_res_ids(self, seed=None, sample_num=None):
+        if self.compressed:
+            with self.get_h5_handle() as hf:
+                return hf[
+                    self._seed_samplenum_str(seed, sample_num)
+                    + "/"
+                    + "confidences"
+                ]["token_res_ids"][()]
+
+        else:
+            full_data_dict = self._get_full_data_dict(
+                seed=seed, sample_num=sample_num
+            )
+            return np.array(full_data_dict["token_res_ids"], dtype=np.int16)
+
     def compress(self):
         if self.server:
             raise NotImplementedError
