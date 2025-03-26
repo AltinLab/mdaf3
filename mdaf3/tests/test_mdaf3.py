@@ -26,14 +26,14 @@ class TestCompressedUnchanged:
 
     @pytest.fixture(scope="class")
     def uncompressed_output(self):
-        yield AF3Output(UNCOMPRESSEED_AF3_OUTPUT_PATH)
+        yield AF3Output(UNCOMPRESSED_AF3_OUTPUT_PATH)
 
     @pytest.fixture(scope="class")
     def compressed_output(self, tmp_path):
         compressed_af3_output_path = (
-            tmp_path / UNCOMPRESSEED_AF3_OUTPUT_PATH.name
+            tmp_path / UNCOMPRESSED_AF3_OUTPUT_PATH.name
         )
-        copyanything(UNCOMPRESSEED_AF3_OUTPUT_PATH, compressed_af3_output_path)
+        copyanything(UNCOMPRESSED_AF3_OUTPUT_PATH, compressed_af3_output_path)
 
         compressed_af3_output = AF3Output(compressed_af3_output_path)
         compressed_af3_output.compress()
@@ -109,14 +109,14 @@ class TestFeatureSelection:
 
     @pytest.fixture(scope="class")
     def uncompressed_output(self):
-        yield AF3Output(UNCOMPRESSEED_AF3_OUTPUT_PATH)
+        yield AF3Output(UNCOMPRESSED_AF3_OUTPUT_PATH)
 
     @pytest.fixture(scope="class")
     def compressed_output(self, tmp_path):
         compressed_af3_output_path = (
-            tmp_path / UNCOMPRESSEED_AF3_OUTPUT_PATH.name
+            tmp_path / UNCOMPRESSED_AF3_OUTPUT_PATH.name
         )
-        copyanything(UNCOMPRESSEED_AF3_OUTPUT_PATH, compressed_af3_output_path)
+        copyanything(UNCOMPRESSED_AF3_OUTPUT_PATH, compressed_af3_output_path)
 
         compressed_af3_output = AF3Output(compressed_af3_output_path)
         compressed_af3_output.compress()
