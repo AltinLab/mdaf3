@@ -86,9 +86,12 @@ pae_ndarr = af3_output.get_pae_ndarr()
 
 # resindices are 0-indexed amino acid residue indices
 # that correspond to AF3 token indices
-min_pae_p1_p2 = pae_ndarr[protein_1_res.resindices][:,
-    protein_2_all_res.resindices
+min_pae_p1_p2 = pae_ndarr[protein_1_all_res.resindices][
+    :, protein_2_all_res.resindices
 ].min()
+
+# alternatively:
+min_pae_p1_p2 = af3_output.get_summary_metrics()["chain_pair_pae_min"][0][1]
 ```
 
 Find the max contact probability between a single residue of one protein chain
@@ -101,7 +104,7 @@ protein_2_all_res = u.select_atoms("segid B").residues
 
 contact_prob_ndarr = af3_output.get_contact_prob_ndarr()
 
-max_contact_prob_res1_p2 = contact_prob_ndarr[protein_res_1.resindices][:,
+max_contact_prob_res1_p2 = contact_prob_ndarr[protein_res_1.resindex][
     protein_2_all_res.resindices
 ].max()
 ```
@@ -111,13 +114,13 @@ of a particular residue?
 ```python
 u = af3_output.get_mda_universe(seed=1)
 
-particular_residue = u.select_atoms("segid A").residues[0]
+particular_residue = u.select_atoms("segid A").residues[0].atoms
 
 atoms_around_particular_res = u.select_atoms(
     "around 5 group pr", pr=particular_residue
 )
 
-mean_pLDDT_around_pr = atoms_around_particular_res.mean()
+mean_pLDDT_around_pr = atoms_around_particular_res.tempfactors.mean()
 ```
 
 Batch apply a feature extraction method to all my AF3 jobs (with job names
