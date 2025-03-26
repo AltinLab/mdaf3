@@ -124,7 +124,7 @@ mean_pLDDT_around_pr = atoms_around_particular_res.tempfactors.mean()
 ```
 
 Batch apply a feature extraction method to all my AF3 jobs (with job names
-stored in a Polars DataFrame)
+stored in a Polars DataFrame)?
 ```python
 from pathlib import Path
 import polars as pl
@@ -161,7 +161,7 @@ Compress my AF3 output directory without losing confidence metric precision?
 > [!NOTE]
 > This will delete 'TERMS_OF_USE.md' as well as the input JSON for the AF3 job ('<job_name>_data.json')
 > among other things. This feature is designed with large HPC batches in mind, so if you aren't sure, 
-> read the [compression code](https://github.com/ljwoods2/mdaf3/blob/main/mdaf3/AF3OutputParser.py#:~:text=compress)!
+> read the [compression code](mdaf3/AF3OutputParser.py#L212)!
 
 ```python
 af3_output = AF3Output(UNCOMPRESSED_AF3_OUTPUT_PATH)
