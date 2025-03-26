@@ -21,18 +21,48 @@ mdaf3
 [url_license]: https://www.gnu.org/licenses/gpl-2.0
 [url_mda]: https://www.mdanalysis.org
 
-Easy analysis of protein structure predictions with MDAnalysis
+> [!IMPORTANT]
+> This package relies on a feature branch of MDAnalysis to parse mmCIF files and
+> therefore should be considered experimental. In the future, if this feature is merged,
+> this package will use the official release. For now, please carefully validate your
+> selections and see [tests](mdaf3/tests) to see what is currently validated.
 
-mdaf3 is bound by a [Code of Conduct](https://github.com/ljwoods2/mdaf3/blob/main/CODE_OF_CONDUCT.md).
+[AlphaFold3](https://github.com/google-deepmind/alphafold3) outputs a set of [confidence metrics](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md) that are useful for i.e. protein binding predictions, however, making use of these metrics requires careful and time consuming parsing.
+
+[MDAnalysis](https://www.mdanalysis.org/) provides an [atom selection language](https://userguide.mdanalysis.org/stable/selections.html) (think SQL for molecular topologies) that makes associating confidence metrics with molecular positions, amino acid/atom type, and other topological information easy.
+
+This package seeks to expose AF3 outputs (including confidence metrics) and predicted topologies via an easy-to-use interface.
+
+### How do I...
+
+Compress my AF3 output directory to 1/10th the size?
+
+> [!IMPORTANT]
+> This will delete 'TERMS_OF_USE.md' as well as the input JSON for the AF3 job ('<job_name>_data.json')
+> among other things. This feature is designed with large HPC batches in mind, so if you aren't sure, 
+> read the [compression code](mdaf3/AF3OutputParser.py#:~:text=compress)!
+
+```python
+# example inference output
+from mdaf3.data.files import UNCOMPRESSEED_AF3_OUTPUT_PATH
+from mdaf3.AF3OutputParser import AF3Output
+
+af3_output = AF3Output(UNCOMPRESSEED_AF3_OUTPUT_PATH)
+af3_output.compress()
+```
+
 
 ### Installation
 
-To build mdaf3 from source,
-we highly recommend using virtual environments.
-If possible, we strongly recommend that you use
-[Anaconda](https://docs.conda.io/en/latest/) as your package manager.
 Below we provide instructions both for `conda` and
 for `pip`.
+
+First, clone the repo locally:
+
+```
+git clone https://github.com/ljwoods2/mdaf3.git
+cd mdaf3
+```
 
 #### With conda
 
@@ -45,11 +75,10 @@ conda create --name mdaf3
 conda activate mdaf3
 ```
 
-Install the development and documentation dependencies:
+Install the dependencies:
 
 ```
 conda env update --name mdaf3 --file devtools/conda-envs/test_env.yaml
-conda env update --name mdaf3 --file docs/requirements.yaml
 ```
 
 Build this package from source:
@@ -82,8 +111,10 @@ If you want to create a development environment, install
 the dependencies required for tests and docs with:
 
 ```
-pip install ".[test,doc]"
+pip install ".[test]"
 ```
+
+mdaf3 is bound by a [Code of Conduct](https://github.com/ljwoods2/mdaf3/blob/main/CODE_OF_CONDUCT.md).
 
 ### Copyright
 

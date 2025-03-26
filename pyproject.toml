@@ -18,7 +18,7 @@ maintainers = [
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "git+https://github.com/MDAnalysis/mdanalysis.git@refs/pull/4712/merge",
+    "git+https://github.com/marinegor/mdanalysis.git@feature/mmcif#subdirectory=package",
     "orjson",
     "numpy",
     "h5py",
@@ -37,10 +37,6 @@ test = [
     "pytest>=6.0",
     "pytest-xdist>=2.5",
     "pytest-cov>=3.0",
-]
-doc = [
-    "sphinx",
-    "sphinx_rtd_theme",
 ]
 
 # [project.urls]

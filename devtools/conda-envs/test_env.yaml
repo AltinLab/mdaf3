@@ -7,8 +7,8 @@ dependencies:
   - python
   - pip
 
-  # MDAnalysis
-  - MDAnalysis
+  # # MDAnalysis
+  # - MDAnalysis
 
   # Testing
   - pytest
@@ -25,5 +25,5 @@ dependencies:
 
   # Pip-only installs
   - pip:
-   - git+https://github.com/MDAnalysis/mdanalysis.git@refs/pull/4712/merge
+    - "git+https://github.com/marinegor/mdanalysis.git@feature/mmcif#subdirectory=package"
 
