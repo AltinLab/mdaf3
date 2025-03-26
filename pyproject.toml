@@ -18,7 +18,12 @@ maintainers = [
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "MDAnalysis>=2.0.0",
+    "git+https://github.com/MDAnalysis/mdanalysis.git@refs/pull/4712/merge",
+    "orjson",
+    "numpy",
+    "h5py",
+    "polars",
+    "gemmi",
 ]
 keywords = [
     "molecular simulations",
@@ -40,7 +45,6 @@ doc = [
 
 # [project.urls]
 # source = "https://github.com/ljwoods2/mdaf3"
-# documentation = "https://mdaf3.readthedocs.io"
 
 [tool.setuptools.packages.find]
 include = ["mdaf3"]
@@ -61,7 +65,7 @@ default-version = "1+unknown"
 method = "git"
 # the below line expects tags to look like '1.0.2'.
 # if prefixing with a v, e.g. 'v1.0.2', change it to ["v*"]
-match = ["*"]
+match = ["v*"]
 
 [tool.versioningit.format]
 distance = "{base_version}+{distance}.{vcs}{rev}"

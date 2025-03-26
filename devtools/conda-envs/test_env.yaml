@@ -16,7 +16,14 @@ dependencies:
   - pytest-xdist
   - codecov
 
+  ##
+  - orjson
+  - numpy
+  - h5py
+  - polars
+  - gemmi
+
   # Pip-only installs
-  #- pip:
-  #  - codecov
+  - pip:
+   - git+https://github.com/MDAnalysis/mdanalysis.git@refs/pull/4712/merge
 
