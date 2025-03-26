@@ -25,7 +25,7 @@ mdaf3
 > This package relies on a feature branch of MDAnalysis to parse mmCIF files and
 > therefore should be considered experimental. In the future, if this feature is merged,
 > this package will use the official release. For now, please carefully validate your
-> selections and see [tests](mdaf3/tests) to see what is currently validated.
+> selections and see [tests](mdaf3/tests/test_mdaf3.py) to see what is currently validated.
 
 [AlphaFold3](https://github.com/google-deepmind/alphafold3) outputs a set of [confidence metrics](https://github.com/google-deepmind/alphafold3/blob/main/docs/output.md) that are useful for i.e. protein binding predictions, however, making use of these metrics requires careful and time consuming parsing.
 
@@ -41,7 +41,7 @@ Get a python interface into my AF3 output?
 from mdaf3.data.files import UNCOMPRESSED_AF3_OUTPUT_PATH
 from mdaf3.AF3OutputParser import AF3Output
 
-# Equivalent to AF3Output(Path("/path/to/inference/output"))
+# Equivalent to AF3Output("/path/to/inference/output")
 af3_output = AF3Output(UNCOMPRESSED_AF3_OUTPUT_PATH)
 ```
 
@@ -86,7 +86,7 @@ pae_ndarr = af3_output.get_pae_ndarr()
 
 # resindices are 0-indexed amino acid residue indices
 # that correspond to AF3 token indices
-min_pae_p1_p2 = pae_ndarr[protein_1_res.resindices][
+min_pae_p1_p2 = pae_ndarr[protein_1_res.resindices][:,
     protein_2_all_res.resindices
 ].min()
 ```
@@ -101,7 +101,7 @@ protein_2_all_res = u.select_atoms("segid B").residues
 
 contact_prob_ndarr = af3_output.get_contact_prob_ndarr()
 
-max_contact_prob_res1_p2 = contact_prob_ndarr[protein_res_1.resindices][
+max_contact_prob_res1_p2 = contact_prob_ndarr[protein_res_1.resindices][:,
     protein_2_all_res.resindices
 ].max()
 ```
@@ -118,6 +118,39 @@ atoms_around_particular_res = u.select_atoms(
 )
 
 mean_pLDDT_around_pr = atoms_around_particular_res.mean()
+```
+
+Batch apply a feature extraction method to all my AF3 jobs (with job names
+stored in a Polars DataFrame)
+```python
+from pathlib import Path
+import polars as pl
+from mdaf3.AF3OutputParser import AF3Output
+from mdaf3.FeatureExtraction import serial_apply, split_apply_combine
+
+def extract_protein1_mean_pLDDT(row, af3_parent_dir):
+    job_dir = Path(af3_parent_dir) / row["job_name"]
+    af3_output = AF3Output(job_dir)
+    u = af3_output.get_mda_universe()
+    protein1_mean_pLDDT = u.select_atoms("segid A").tempfactors.mean()
+    row["protein1_mean_pLDDT"] = protein1_mean_pLDDT
+    return pl.DataFrame(row)
+
+all_jobs = pl.DataFrame({"job_name": ["93f0240a1d2c15da9551841d22239d41"]})
+
+af3_parent_dir = "mdaf3/data"
+
+# use split_apply_combine for process-parallel execution.
+# these methods will convert each row into a dict,
+# pass it to your extraction method,
+# and then concat the resulting pl.DataFrames
+all_job_with_feat = serial_apply(
+    all_jobs, extract_protein1_mean_pLDDT, af3_parent_dir
+)
+
+feature_np = (
+    all_job_with_feat.select("protein1_mean_pLDDT").to_series().to_numpy()
+)
 ```
 
 Compress my AF3 output directory without losing confidence metric precision?

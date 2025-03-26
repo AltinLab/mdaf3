@@ -76,7 +76,7 @@ class AF3Output:
         """
 
         if self.compressed:
-            with self.get_h5_handle() as hf:
+            with self._get_h5_handle() as hf:
                 contact_probs = hf[
                     self._seed_samplenum_str(seed, sample_num)
                     + "/"
@@ -127,7 +127,7 @@ class AF3Output:
 
     def get_summary_metrics(self, seed=None, sample_num=None):
         if self.compressed:
-            with self.get_h5_handle() as hf:
+            with self._get_h5_handle() as hf:
                 summary_metrics = hf[
                     self._seed_samplenum_str(seed, sample_num)
                     + "/"
@@ -168,7 +168,7 @@ class AF3Output:
 
     def get_token_chain_ids(self, seed=None, sample_num=None):
         if self.compressed:
-            with self.get_h5_handle() as hf:
+            with self._get_h5_handle() as hf:
                 return hf[
                     self._seed_samplenum_str(seed, sample_num)
                     + "/"
@@ -183,7 +183,7 @@ class AF3Output:
 
     def get_atom_chain_ids(self, seed=None, sample_num=None):
         if self.compressed:
-            with self.get_h5_handle() as hf:
+            with self._get_h5_handle() as hf:
                 return hf[
                     self._seed_samplenum_str(seed, sample_num)
                     + "/"
@@ -198,7 +198,7 @@ class AF3Output:
 
     def get_token_res_ids(self, seed=None, sample_num=None):
         if self.compressed:
-            with self.get_h5_handle() as hf:
+            with self._get_h5_handle() as hf:
                 return hf[
                     self._seed_samplenum_str(seed, sample_num)
                     + "/"

@@ -18,12 +18,12 @@ maintainers = [
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "git+https://github.com/marinegor/mdanalysis.git@feature/mmcif#subdirectory=package",
     "orjson",
     "numpy",
     "h5py",
     "polars",
     "gemmi",
+    "MDAnalysis@git+https://github.com/marinegor/mdanalysis.git@feature/mmcif#subdirectory=package",
 ]
 keywords = [
     "molecular simulations",
