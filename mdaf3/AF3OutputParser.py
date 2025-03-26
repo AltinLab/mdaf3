@@ -3,7 +3,6 @@ import orjson
 from pathlib import Path
 import polars as pl
 import MDAnalysis as mda
-import polars as pl
 import h5py
 import gzip
 
@@ -59,14 +58,13 @@ class AF3Output:
             )
             raise NotImplementedError
 
-        else:
-            self._best_model_path = dir_path / f"{self.job_name}_model.cif"
-            self._best_full_data_path = (
-                dir_path / f"{self.job_name}_confidences.json"
-            )
-            self._best_summary_path = (
-                dir_path / f"{self.job_name}_summary_confidences.json"
-            )
+        self._best_model_path = dir_path / f"{self.job_name}_model.cif"
+        self._best_full_data_path = (
+            dir_path / f"{self.job_name}_confidences.json"
+        )
+        self._best_summary_path = (
+            dir_path / f"{self.job_name}_summary_confidences.json"
+        )
 
     def get_contact_prob_ndarr(
         self, seed=None, sample_num=None, indices=(slice(None), slice(None))
