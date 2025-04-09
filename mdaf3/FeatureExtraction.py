@@ -40,7 +40,7 @@ def anneal_helix_indices(helix_resindices, len_tol=15, gap_tol=10):
             if len(curr_helix) >= len_tol:
                 helices.append(curr_helix)
             # start new helix
-            curr_helix = [helix_resindices[i]]
+            curr_helix = [int(helix_resindices[i])]
 
         prev_ix = helix_resindices[i]
 
@@ -57,7 +57,7 @@ def split_apply_combine(df, func, *args, **kwargs):
         for future in as_completed(futures):
             results.append(future.result())
 
-    return pl.concat(results)
+    return pl.concat(results, how="vertical_relaxed")
 
 
 def serial_apply(df, func, *args, **kwargs):
@@ -68,4 +68,4 @@ def serial_apply(df, func, *args, **kwargs):
     ):
         out.append(func(row, *args, **kwargs))
 
-    return pl.concat(out)
+    return pl.concat(out, how="vertical_relaxed")
