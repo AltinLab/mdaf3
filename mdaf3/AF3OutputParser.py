@@ -56,15 +56,16 @@ class AF3Output:
             self._best_summary_path = (
                 dir_path / f"{self.job_name}_summary_confidences_0.json"
             )
-            raise NotImplementedError
 
-        self._best_model_path = dir_path / f"{self.job_name}_model.cif"
-        self._best_full_data_path = (
-            dir_path / f"{self.job_name}_confidences.json"
-        )
-        self._best_summary_path = (
-            dir_path / f"{self.job_name}_summary_confidences.json"
-        )
+        else:
+
+            self._best_model_path = dir_path / f"{self.job_name}_model.cif"
+            self._best_full_data_path = (
+                dir_path / f"{self.job_name}_confidences.json"
+            )
+            self._best_summary_path = (
+                dir_path / f"{self.job_name}_summary_confidences.json"
+            )
 
     def get_contact_prob_ndarr(
         self, seed=None, sample_num=None, indices=(slice(None), slice(None))
@@ -374,6 +375,9 @@ class AF3Output:
             path = self._best_full_data_path
 
         else:
+            if self.server:
+                raise NotImplementedError
+
             path = self.dir_path / seed_samplenum_str / "confidences.json"
 
         return orjson.loads(open(path, "r").read())
@@ -387,6 +391,8 @@ class AF3Output:
         if seed_samplenum_str == "":
             path = self._best_summary_path
         else:
+            if self.server:
+                raise NotImplementedError
             path = (
                 self.dir_path / seed_samplenum_str / "summary_confidences.json"
             )
@@ -394,12 +400,10 @@ class AF3Output:
         return orjson.loads(open(path, "r").read())
 
     def _seed_samplenum_str(self, seed, sample_num):
-        if self.server:
-            raise NotImplementedError
-
-        elif seed is None and sample_num is None:
+        if seed is None and sample_num is None:
             return ""
-
+        if self.server:
+            raise NotImplementedError("Only best model is available")
         sample_num = 0 if sample_num is None else sample_num
 
         if seed is None:
