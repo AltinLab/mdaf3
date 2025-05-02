@@ -137,7 +137,7 @@ def extract_protein1_mean_pLDDT(row, af3_parent_dir):
     u = af3_output.get_mda_universe()
     protein1_mean_pLDDT = u.select_atoms("segid A").tempfactors.mean()
     row["protein1_mean_pLDDT"] = protein1_mean_pLDDT
-    return pl.DataFrame(row)
+    return row
 
 all_jobs = pl.DataFrame({"job_name": ["93f0240a1d2c15da9551841d22239d41"]})
 

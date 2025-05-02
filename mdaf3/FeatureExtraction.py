@@ -2,6 +2,7 @@ from MDAnalysis.analysis.dssp import DSSP
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import polars as pl
+from itertools import repeat
 
 
 def raw_helix_indices(sel):
@@ -47,17 +48,36 @@ def anneal_helix_indices(helix_resindices, len_tol=15, gap_tol=10):
     return helices
 
 
+def _apply_row(row, func, args, kwargs):
+    return func(row, *args, **kwargs)
+
+
 def split_apply_combine(df, func, *args, **kwargs):
-    results = []
-    # Create a list of rows to process.
-    rows = list(df.iter_rows(named=True))
+    """
+    Applies `func(row, *args, **kwargs)` to each row of `df` in parallel,
+    then concatenates the returned DataFrames.
+    """
+    # an iterator over your rows
+    rows = df.iter_rows(named=True)
+
+    if "chunksize" in kwargs:
+        chunksize = kwargs.pop("chunksize")
+    else:
+        chunksize = 1
 
     with ProcessPoolExecutor() as executor:
-        futures = [executor.submit(func, row, *args, **kwargs) for row in rows]
-        for future in as_completed(futures):
-            results.append(future.result())
+        results = executor.map(
+            _apply_row,
+            rows,
+            repeat(func),
+            repeat(args),
+            repeat(kwargs),
+            chunksize=chunksize,
+        )
 
-    return pl.concat(results, how="vertical_relaxed")
+        partials = list(results)
+
+    return pl.DataFrame(partials, infer_schema_length=len(partials))
 
 
 def serial_apply(df, func, *args, **kwargs):
@@ -68,4 +88,4 @@ def serial_apply(df, func, *args, **kwargs):
     ):
         out.append(func(row, *args, **kwargs))
 
-    return pl.concat(out, how="vertical_relaxed")
+    return pl.DataFrame(out, infer_schema_length=len(out))
