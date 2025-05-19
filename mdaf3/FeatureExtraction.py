@@ -1,6 +1,6 @@
 from MDAnalysis.analysis.dssp import DSSP
 from tqdm import tqdm
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from tqdm.contrib.concurrent import process_map
 import polars as pl
 from itertools import repeat
 
@@ -65,17 +65,15 @@ def split_apply_combine(df, func, *args, **kwargs):
     else:
         chunksize = 1
 
-    with ProcessPoolExecutor() as executor:
-        results = executor.map(
-            _apply_row,
-            rows,
-            repeat(func),
-            repeat(args),
-            repeat(kwargs),
-            chunksize=chunksize,
-        )
-
-        partials = list(results)
+    partials = process_map(
+        _apply_row,
+        rows,
+        repeat(func),
+        repeat(args),
+        repeat(kwargs),
+        chunksize=chunksize,
+        total=df.height,
+    )
 
     return pl.DataFrame(partials, infer_schema_length=len(partials))
 
