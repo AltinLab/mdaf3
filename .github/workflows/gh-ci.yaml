@@ -72,7 +72,7 @@ jobs:
     - name: Install package
       run: |
         python --version
-        python -m pip install .  --no-deps --no-build-isolation
+        python -m pip install .  --no-deps
 
     - name: Python information
       run: |
