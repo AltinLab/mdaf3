@@ -18,7 +18,7 @@ dependencies:
 
   ##
   - orjson
-  - numpy
+  - numpy==1.23
   - h5py
   - polars
   - gemmi
