@@ -18,12 +18,12 @@ dependencies:
 
   ##
   - orjson
-  - numpy<1.24
+  - numpy
   - h5py
   - polars
   - gemmi
 
   # Pip-only installs
   - pip:
-    - "git+https://github.com/marinegor/mdanalysis.git@feature/mmcif#subdirectory=package"
+    - "git+https://github.com/ljwoods2/mdanalysis.git@feature/mmcif#subdirectory=package"
 
