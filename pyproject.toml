@@ -19,11 +19,11 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "orjson",
-    "numpy",
+    "numpy>=2.0.0,<2.3.0",
     "h5py",
     "polars",
     "gemmi",
-    "MDAnalysis@git+https://github.com/marinegor/mdanalysis.git@feature/mmcif#subdirectory=package",
+    "MDAnalysis@git+https://github.com/ljwoods2/mdanalysis.git@feature/mmcif#subdirectory=package",
 ]
 keywords = [
     "molecular simulations",
