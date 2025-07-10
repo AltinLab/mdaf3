@@ -22,7 +22,7 @@ def copyanything(src, dst):
             raise
 
 
-class TestCompressedUnchanged:
+class TestAF3CompressedUnchanged:
 
     @pytest.fixture
     def uncompressed_output(self):
