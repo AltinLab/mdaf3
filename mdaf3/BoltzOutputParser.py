@@ -51,7 +51,7 @@ class BoltzOutput():
             raise NotImplementedError
         
         else:
-            summ_dict = orjson.loads(open(self.dir_path / f"confidence_{self.job_name}_model_{sample_num}.json"))
+            summ_dict = orjson.loads(open(self.dir_path / f"confidence_{self.job_name}_model_{sample_num}.json").read())
             return summ_dict
     
     def get_pae_ndarr(self, sample_num=0):
