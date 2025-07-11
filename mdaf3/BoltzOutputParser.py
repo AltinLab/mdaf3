@@ -77,7 +77,7 @@ class BoltzOutput():
         if self.compressed:
             raise NotImplementedError
 
-        top_path = (self.dir_path / f"{self.job_name}_model_{sample_num}.{self.fmt}")
+        top_path = (self.dir_path / f"{self.job_name}_model_{sample_num}.{self.fmt}").as_posix()
 
 
         return mda.Universe(top_path, topology_format=self.fmt, **kwargs)
