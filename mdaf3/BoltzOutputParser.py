@@ -29,7 +29,7 @@ class BoltzOutput():
             self.compressed = False
 
         best_model = dir_path / f"{self.job_name}_model_0.cif"
-        fmt = "MMCIF"
+        fmt = "cif"
         if not best_model.exists():
             best_model = dir_path / f"{self.job_name}_model_0.pdb"
             fmt = "pdb"
