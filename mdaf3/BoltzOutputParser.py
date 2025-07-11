@@ -36,7 +36,7 @@ class BoltzOutput():
             if not best_model.exists():
                 raise FileExistsError(f"No structure file found for {directory_path}")
 
-        self._fmt = fmt
+        self.fmt = fmt
     
 
     def has_affinity(self):
