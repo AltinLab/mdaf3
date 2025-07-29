@@ -235,8 +235,7 @@ class AF3Output:
         else:
             seed_str = self._seed_str(None)
             return (
-                self.dir_path / seed_str
-                + "_embeddings" / self.job_name
+                (self.dir_path / seed_str + "_embeddings") / self.job_name
                 + "_"
                 + seed_str
                 + "_embeddings.npz"
@@ -483,8 +482,7 @@ class AF3Output:
         if self.server:
             raise NotImplementedError
         path = (
-            self.dir_path / seed_str
-            + "_embeddings" / self.job_name
+            (self.dir_path / seed_str + "_embeddings") / self.job_name
             + "_"
             + seed_str
             + "_embeddings.npz"
