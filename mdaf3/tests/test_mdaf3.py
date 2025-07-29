@@ -97,9 +97,7 @@ class TestAF3CompressedUnchanged:
         assert np.all(np.equal(comp_chain_ids, uncomp_chain_ids))
 
     @pytest.mark.parametrize("seed", [None, 1, 2])
-    def test_atom_chain_ids(
-        self, uncompressed_output, compressed_output, seed
-    ):
+    def test_atom_chain_ids(self, uncompressed_output, compressed_output, seed):
         comp_chain_ids = compressed_output.get_atom_chain_ids(seed=seed)
         uncomp_chain_ids = uncompressed_output.get_atom_chain_ids(seed=seed)
 
@@ -111,6 +109,30 @@ class TestAF3CompressedUnchanged:
         uncomp_res_ids = uncompressed_output.get_token_res_ids(seed=seed)
 
         assert np.all(np.equal(comp_res_ids, uncomp_res_ids))
+
+    @pytest.mark.parametrize("seed", [None, 1, 2])
+    def test_single_embeddings(
+        self, uncompressed_output, compressed_output, seed
+    ):
+        comp_single_embed = compressed_output.get_single_embeddings(seed=seed)
+        uncomp_single_embed = uncompressed_output.get_single_embeddings(
+            seed=seed
+        )
+
+        # float16 tolerance
+        assert_allclose(comp_single_embed, comp_single_embed, atol=0.001)
+
+    @pytest.mark.parametrize("seed", [None, 1, 2])
+    def test_pairwise_embeddings(
+        self, uncompressed_output, compressed_output, seed
+    ):
+        comp_pair_embed = compressed_output.get_pairwise_embeddings(seed=seed)
+        uncomp_pair_embed = uncompressed_output.get_pairwise_embeddings(
+            seed=seed
+        )
+
+        # float16 tolerance
+        assert_allclose(comp_pair_embed, uncomp_pair_embed, atol=0.001)
 
 
 @pytest.mark.parametrize("seed", [None, 1, 2])

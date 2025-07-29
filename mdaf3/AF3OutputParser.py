@@ -67,6 +67,25 @@ class AF3Output:
                 dir_path / f"{self.job_name}_summary_confidences.json"
             )
 
+            if self.compressed:
+                with self._get_h5_handle() as hf:
+                    self.best_seed = hf["ranking_scores/seed"][
+                        np.argmax(hf["ranking_scores/ranking_score"][:])
+                    ]
+
+            else:
+                ranking_scores = pl.read_csv(
+                    self.dir_path / "ranking_scores.csv"
+                )
+                seed_np = ranking_scores.select("seed").to_series().to_numpy()
+                ranking_score_np = (
+                    ranking_scores.select("ranking_score")
+                    .to_series()
+                    .to_numpy()
+                )
+
+                self.best_seed = seed_np[np.argmax(ranking_score_np)]
+
     def get_contact_prob_ndarr(
         self, seed=None, sample_num=None, indices=(slice(None), slice(None))
     ):
@@ -112,9 +131,7 @@ class AF3Output:
                     + "confidences"
                 ]["pae"]
 
-                return (pae[indices[0]][:, indices[1]] / 100).astype(
-                    np.float32
-                )
+                return (pae[indices[0]][:, indices[1]] / 100).astype(np.float32)
 
         else:
             full_data_dict = self._get_full_data_dict(
@@ -209,6 +226,41 @@ class AF3Output:
                 seed=seed, sample_num=sample_num
             )
             return np.array(full_data_dict["token_res_ids"], dtype=np.int16)
+
+    def has_embeddings(self):
+        if self.compressed:
+            with self._get_h5_handle() as hf:
+                return self._seed_str(None) + "_embeddings" in set(hf.keys())
+
+        else:
+            seed_str = self._seed_str(None)
+            return (
+                self.dir_path / seed_str
+                + "_embeddings" / self.job_name
+                + "_"
+                + seed_str
+                + "_embeddings.npz"
+            ).exists()
+
+    def get_single_embeddings(self, seed=None):
+        if self.compressed:
+            with self._get_h5_handle() as hf:
+                return hf[self._seed_str(seed) + "_embeddings"][
+                    "single_embeddings"
+                ][:]
+
+        else:
+            return self._get_embeddings_file(seed=seed)["single_embeddings"]
+
+    def get_pairwise_embeddings(self, seed=None):
+        if self.compressed:
+            with self._get_h5_handle() as hf:
+                return hf[self._seed_str(seed) + "_embeddings"][
+                    "pairwise_embeddings"
+                ][:]
+
+        else:
+            return self._get_embeddings_file(seed=seed)["pairwise_embeddings"]
 
     def compress(self):
         if self.server:
@@ -335,6 +387,29 @@ class AF3Output:
             hf["confidences"] = best_dataset_dir["confidences"]
             hf["summary_confidences"] = best_dataset_dir["summary_confidences"]
 
+            if self.has_embeddings():
+                for seed in seed_np.unique():
+                    single = self.get_single_embeddings(seed=seed)
+                    pair = self.get_pairwise_embeddings(seed=seed)
+
+                    embed_grp = hf.create_grp(
+                        self._seed_str(seed) + "_embeddings"
+                    )
+                    embed_grp.create_dataset(
+                        "single_embeddings",
+                        data=single,
+                        dtype=np.float16,
+                        compression="gzip",
+                        compression_opts=9,
+                    )
+                    embed_grp.create_dataset(
+                        "pairwise_embeddings",
+                        data=pair,
+                        dtype=np.float16,
+                        compression="gzip",
+                        compression_opts=9,
+                    )
+
         # compress best cif
         with (
             open(self._best_model_path, "rb") as src,
@@ -399,6 +474,24 @@ class AF3Output:
 
         return orjson.loads(open(path, "r").read())
 
+    def _get_embeddings_file(self, seed=None):
+        if self.compressed:
+            raise ValueError
+
+        seed_str = self._seed_str(seed, seed)
+
+        if self.server:
+            raise NotImplementedError
+        path = (
+            self.dir_path / seed_str
+            + "_embeddings" / self.job_name
+            + "_"
+            + seed_str
+            + "_embeddings.npz"
+        )
+
+        return np.load(path)
+
     def _seed_samplenum_str(self, seed, sample_num):
         if seed is None and sample_num is None:
             return ""
@@ -410,6 +503,14 @@ class AF3Output:
             raise ValueError("seed must be provided if sample_num is provided")
 
         return f"seed-{seed}_sample-{sample_num}"
+
+    def _seed_str(self, seed):
+        if seed is None:
+            seed = self.best_seed
+        if self.server:
+            raise NotImplementedError("Only best model is available")
+
+        return f"seed-{seed}"
 
     def _append_gz(self, path):
         return path.parent / (path.name + ".gz")
