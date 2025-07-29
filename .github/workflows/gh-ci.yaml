@@ -24,7 +24,6 @@ defaults:
 
 jobs:
   main-tests:
-    if: "github.repository == 'ljwoods2/mdaf3'"
     runs-on: ${{ matrix.os }}
     strategy:
         fail-fast: false
@@ -107,7 +106,6 @@ jobs:
 
 
   pylint_check:
-    if: "github.repository == 'ljwoods2/mdaf3'"
     runs-on: ubuntu-latest
 
     steps:
@@ -132,7 +130,6 @@ jobs:
 
 
   pypi_check:
-    if: "github.repository == 'ljwoods2/mdaf3'"
     runs-on: ubuntu-latest
 
     steps:
