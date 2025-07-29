@@ -235,10 +235,8 @@ class AF3Output:
         else:
             seed_str = self._seed_str(None)
             return (
-                (self.dir_path / (seed_str + "_embeddings")) / self.job_name
-                + "_"
-                + seed_str
-                + "_embeddings.npz"
+                (self.dir_path / (seed_str + "_embeddings"))
+                / (self.job_name + "_" + seed_str + "_embeddings.npz")
             ).exists()
 
     def get_single_embeddings(self, seed=None):
@@ -481,11 +479,8 @@ class AF3Output:
 
         if self.server:
             raise NotImplementedError
-        path = (
-            (self.dir_path / (seed_str + "_embeddings")) / self.job_name
-            + "_"
-            + seed_str
-            + "_embeddings.npz"
+        path = (self.dir_path / (seed_str + "_embeddings")) / (
+            self.job_name + "_" + seed_str + "_embeddings.npz"
         )
 
         return np.load(path)
