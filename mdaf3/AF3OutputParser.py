@@ -249,7 +249,7 @@ class AF3Output:
         else:
             return self._get_embeddings_file(seed=seed)["single_embeddings"]
 
-    def get_pairwise_embeddings(self, seed=None):
+    def get_pair_embeddings(self, seed=None):
         if self.compressed:
             with self._get_h5_handle() as hf:
                 return hf[self._seed_str(seed) + "_embeddings"][
@@ -387,7 +387,7 @@ class AF3Output:
             if self.has_embeddings():
                 for seed in np.unique(seed_np):
                     single = self.get_single_embeddings(seed=seed)
-                    pair = self.get_pairwise_embeddings(seed=seed)
+                    pair = self.get_pair_embeddings(seed=seed)
 
                     embed_grp = hf.create_group(
                         self._seed_str(seed) + "_embeddings"
