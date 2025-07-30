@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Docker image for conversion
         run: |
-          docker build . -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+          docker build . -t ghcr.io/altinlab/${{ github.repository }}:latest
 
       - name: Log in to GitHub Container Registry
         if: github.event_name == 'push'
@@ -44,7 +44,7 @@ jobs:
       - name: Push Docker image
         if: github.event_name == 'push'
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+          docker push ghcr.io/altinlab/${{ github.repository }}:latest
 
       - name: Install Apptainer (Singularity)
         if: github.event_name == 'push'
@@ -55,7 +55,7 @@ jobs:
       - name: Build Singularity .sif
         if: github.event_name == 'push'
         run: |
-          apptainer build mypackage.sif docker-daemon://ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+          apptainer build mypackage.sif docker-daemon://ghcr.io/altinlab/${{ github.repository }}:latest
 
       - name: Create GitHub Release
         if: github.event_name == 'push'
