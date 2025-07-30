@@ -68,7 +68,7 @@ jobs:
         id: release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.sha }}
+          tag_name: test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
