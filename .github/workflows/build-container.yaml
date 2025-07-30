@@ -23,11 +23,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pipx
+          python -m pip install --upgrade pip
+          pip install wheel
 
       - name: Build package
         run: |
-          python -m pipx run build --sdist
+          pip wheel --no-deps . -w wheelhouse/
 
       - name: Build Docker image for conversion
         run: |
