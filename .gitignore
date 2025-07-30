@@ -110,3 +110,6 @@ poetry.lock
 
 # dev
 tmp/
+
+# af3 embeddings- too large for GH
+mdaf3/data/*/*embeddings*

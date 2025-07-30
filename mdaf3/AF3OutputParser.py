@@ -236,7 +236,7 @@ class AF3Output:
             seed_str = self._seed_str(None)
             return (
                 (self.dir_path / (seed_str + "_embeddings"))
-                / (self.job_name + "_" + seed_str + "_embeddings.npz")
+                / ("embeddings.npz")
             ).exists()
 
     def get_single_embeddings(self, seed=None):
@@ -253,11 +253,11 @@ class AF3Output:
         if self.compressed:
             with self._get_h5_handle() as hf:
                 return hf[self._seed_str(seed) + "_embeddings"][
-                    "pairwise_embeddings"
+                    "pair_embeddings"
                 ][:]
 
         else:
-            return self._get_embeddings_file(seed=seed)["pairwise_embeddings"]
+            return self._get_embeddings_file(seed=seed)["pair_embeddings"]
 
     def compress(self):
         if self.server:
@@ -385,11 +385,11 @@ class AF3Output:
             hf["summary_confidences"] = best_dataset_dir["summary_confidences"]
 
             if self.has_embeddings():
-                for seed in seed_np.unique():
+                for seed in np.unique(seed_np):
                     single = self.get_single_embeddings(seed=seed)
                     pair = self.get_pairwise_embeddings(seed=seed)
 
-                    embed_grp = hf.create_grp(
+                    embed_grp = hf.create_group(
                         self._seed_str(seed) + "_embeddings"
                     )
                     embed_grp.create_dataset(
@@ -400,7 +400,7 @@ class AF3Output:
                         compression_opts=9,
                     )
                     embed_grp.create_dataset(
-                        "pairwise_embeddings",
+                        "pair_embeddings",
                         data=pair,
                         dtype=np.float16,
                         compression="gzip",
@@ -475,13 +475,11 @@ class AF3Output:
         if self.compressed:
             raise ValueError
 
-        seed_str = self._seed_str(seed, seed)
+        seed_str = self._seed_str(seed)
 
         if self.server:
             raise NotImplementedError
-        path = (self.dir_path / (seed_str + "_embeddings")) / (
-            self.job_name + "_" + seed_str + "_embeddings.npz"
-        )
+        path = (self.dir_path / (seed_str + "_embeddings")) / ("embeddings.npz")
 
         return np.load(path)
 

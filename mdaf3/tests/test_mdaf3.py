@@ -114,25 +114,31 @@ class TestAF3CompressedUnchanged:
     def test_single_embeddings(
         self, uncompressed_output, compressed_output, seed
     ):
-        comp_single_embed = compressed_output.get_single_embeddings(seed=seed)
-        uncomp_single_embed = uncompressed_output.get_single_embeddings(
-            seed=seed
-        )
+        if uncompressed_output.has_embeddings():
+            comp_single_embed = compressed_output.get_single_embeddings(
+                seed=seed
+            )
+            uncomp_single_embed = uncompressed_output.get_single_embeddings(
+                seed=seed
+            )
 
-        # float16 tolerance
-        assert_allclose(comp_single_embed, comp_single_embed, atol=0.001)
+            # float16 tolerance
+            assert_allclose(comp_single_embed, uncomp_single_embed, atol=0.001)
 
     @pytest.mark.parametrize("seed", [None, 1, 2])
     def test_pairwise_embeddings(
         self, uncompressed_output, compressed_output, seed
     ):
-        comp_pair_embed = compressed_output.get_pairwise_embeddings(seed=seed)
-        uncomp_pair_embed = uncompressed_output.get_pairwise_embeddings(
-            seed=seed
-        )
+        if uncompressed_output.has_embeddings():
+            comp_pair_embed = compressed_output.get_pairwise_embeddings(
+                seed=seed
+            )
+            uncomp_pair_embed = uncompressed_output.get_pairwise_embeddings(
+                seed=seed
+            )
 
-        # float16 tolerance
-        assert_allclose(comp_pair_embed, uncomp_pair_embed, atol=0.001)
+            # float16 tolerance
+            assert_allclose(comp_pair_embed, uncomp_pair_embed, atol=0.001)
 
 
 @pytest.mark.parametrize("seed", [None, 1, 2])
