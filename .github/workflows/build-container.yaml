@@ -56,7 +56,7 @@ jobs:
       - name: Build Singularity .sif
         if: github.event_name == 'push'
         run: |
-          apptainer build mypackage.sif docker-daemon://ghcr.io/altinlab/mdaf3:latest
+          apptainer build mdaf3.sif docker-daemon://ghcr.io/altinlab/mdaf3:latest
 
       - name: Create GitHub Release
         if: github.event_name == 'push'
