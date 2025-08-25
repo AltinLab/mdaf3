@@ -407,8 +407,9 @@ class AF3Output:
                         compression_opts=9,
                     )
 
-                    (self.dir_path / (self._seed_str(seed) + "_embeddings")) / (
-                        "embeddings.npz"
+                    (
+                        (self.dir_path / (self._seed_str(seed) + "_embeddings"))
+                        / ("embeddings.npz")
                     ).unlink(missing_okay=True)
 
         # compress best cif
