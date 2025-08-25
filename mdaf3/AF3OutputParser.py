@@ -409,8 +409,10 @@ class AF3Output:
 
                     (
                         (self.dir_path / (self._seed_str(seed) + "_embeddings"))
-                        / ("embeddings.npz")
                     ).unlink(missing_ok=True)
+                    (
+                        self.dir_path / (self._seed_str(seed) + "_embeddings")
+                    ).rmdir()
 
         # compress best cif
         with (
