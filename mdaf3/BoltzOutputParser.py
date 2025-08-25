@@ -6,7 +6,8 @@ import MDAnalysis as mda
 import h5py
 import gzip
 
-class BoltzOutput():
+
+class BoltzOutput:
 
     def __init__(self, directory_path, **kwargs):
 
@@ -34,54 +35,66 @@ class BoltzOutput():
             best_model = dir_path / f"{self.job_name}_model_0.pdb"
             fmt = "pdb"
             if not best_model.exists():
-                raise FileExistsError(f"No structure file found for {directory_path}")
+                raise FileExistsError(
+                    f"No structure file found for {directory_path}"
+                )
 
         self.fmt = fmt
-    
 
     def has_affinity(self):
-        return (self.dir_path/ f"affinity_{self.job_name}.json").exists()
-    
+        return (self.dir_path / f"affinity_{self.job_name}.json").exists()
+
     def get_affinity_metrics(self):
         raise NotImplementedError
-    
+
     def get_summary_metrics(self, sample_num=0):
-        
+
         if self.compressed:
             raise NotImplementedError
-        
+
         else:
-            summ_dict = orjson.loads(open(self.dir_path / f"confidence_{self.job_name}_model_{sample_num}.json").read())
+            summ_dict = orjson.loads(
+                open(
+                    self.dir_path
+                    / f"confidence_{self.job_name}_model_{sample_num}.json"
+                ).read()
+            )
             return summ_dict
-    
+
     def get_pae_ndarr(self, sample_num=0):
-        
+
         if self.compressed:
             raise NotImplementedError
-        
-        return np.load(self.dir_path / f"pae_{self.job_name}_model_{sample_num}.npz")["pae"]
+
+        return np.load(
+            self.dir_path / f"pae_{self.job_name}_model_{sample_num}.npz"
+        )["pae"]
 
     def get_pde_ndarr(self, sample_num=0):
         if self.compressed:
             raise NotImplementedError
 
-        return np.load(self.dir_path / f"pde_{self.job_name}_model_{sample_num}.npz")["pde"]
-        
+        return np.load(
+            self.dir_path / f"pde_{self.job_name}_model_{sample_num}.npz"
+        )["pde"]
+
     def get_plddt_ndarr(self, sample_num=0):
         if self.compressed:
             raise NotImplementedError
-        
-        return np.load(self.dir_path / f"plddt_{self.job_name}_model_{sample_num}.npz")["plddt"]
-        
+
+        return np.load(
+            self.dir_path / f"plddt_{self.job_name}_model_{sample_num}.npz"
+        )["plddt"]
+
     def get_mda_universe(self, sample_num=0, **kwargs):
         if self.compressed:
             raise NotImplementedError
 
-        top_path = (self.dir_path / f"{self.job_name}_model_{sample_num}.{self.fmt}").as_posix()
-
+        top_path = (
+            self.dir_path / f"{self.job_name}_model_{sample_num}.{self.fmt}"
+        ).as_posix()
 
         return mda.Universe(top_path, topology_format=self.fmt, **kwargs)
-        
 
     def compress(self):
-        raise NotImplementedError    
+        raise NotImplementedError
